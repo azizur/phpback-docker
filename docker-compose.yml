@@ -1,0 +1,65 @@
+nginx:
+  container_name: phpback_nginx
+  image: nginx:1.11
+  links:
+    - php
+  # volumes_from:
+  #   - data
+  ports:
+    - "80:80"
+    - "443:443"
+  volumes:
+    - ./php/phpback:/var/www/phpback:rw
+    - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    - ./.docker/nginx/logs:/var/log/nginx/:rw
+
+php:
+  container_name: phpback_app
+  build: php
+  volumes:
+    - ./.docker/php/logs:/var/log/php:rw
+    - ./php/phpback:/var/www/phpback:rw
+  # image: prodevstudio/phpback
+  # working_dir: /var/www/phpback
+  environment:
+    CI_ENV: development
+    MYSQL_HOST: 'mysql'
+    MYSQL_USER: 'phpback'
+    MYSQL_PASSWORD: 'phpback'
+    MYSQL_DATABASE: 'phpback'
+    ADMIN_USER: 'phpback'
+    ADMIN_PASSWORD: 'phpback'
+    ADMIN_EMAIL: 'phpback@example.com'
+    PHPBACK_TITLE: 'PHPBack'
+    PHPBACK_EMAIL: 'phpback@example.com'
+    PHPBACK_LANGUAGE: 'english'
+    PHPBACK_MAX_VOTES: 20
+    PHPBACK_MAX_RESULTS: 10
+    RECAPTCHA_PUBLIC_KEY: ''
+    RECAPTCHA_PRIVATE_KEY: ''
+    SMTP_HOST: ''
+    SMTP_USER: ''
+    SMTP_PASSWORD: ''
+    SMTP_PORT: 25
+  # volumes_from:
+  #   - data
+  links:
+    - mysql
+  mem_limit: 2000000000
+
+mysql:
+  container_name: phpback_mysql
+  image: mariadb
+  ports:
+    - 3306:3306
+  # volumes_from:
+  #   - data
+  volumes:
+    - ./.docker/mariadb/data:/var/lib/mysql:rw
+    - ./.docker/mariadb/logs:/var/log/mysql/:rw
+  environment:
+    MYSQL_RANDOM_ROOT_PASSWORD: 1
+    # MYSQL_ROOT_PASSWORD: phpback
+    MYSQL_DATABASE: phpback
+    MYSQL_PASSWORD: phpback
+    MYSQL_USER: phpback
