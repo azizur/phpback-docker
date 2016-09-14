@@ -15,9 +15,7 @@ RUN \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN \
-  curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-  && docker-php-ext-install mysqli \
-  && docker-php-ext-install opcache \
+  docker-php-ext-install mysqli \
   && apt-get clean \
   && apt-get autoremove \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
